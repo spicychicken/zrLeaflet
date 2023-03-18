@@ -12,18 +12,18 @@ export class ZRContainer {
         L.DomUtil.setPosition(container, position);
 
         if (container.width !== size.x || container.height !== size.y) {
-        container.width = size.x;
-        container.style.width = size.x+ 'px';
-        container.height = size.y;
-        container.style.height = size.y + 'px';
+            container.width = size.x;
+            container.style.width = size.x+ 'px';
+            container.height = size.y;
+            container.style.height = size.y + 'px';
         }
     }
 
     _adjustZRenderToSize(size) {
         if (this._zr) {
-        if (this._zr.getWidth() !== size.x || this._zr.getHeight() !== size.y) {
-            this._zr.resize({width: size.x, height: size.y});
-        }
+            if (this._zr.getWidth() !== size.x || this._zr.getHeight() !== size.y) {
+                this._zr.resize({width: size.x, height: size.y});
+            }
         }
     }
 
@@ -39,11 +39,11 @@ export class ZRContainer {
     addView(view, visiable) {
         const viewName = view.getName();
         if (this._viewsMap.hasOwnProperty(viewName) == false) {
-        view.setLayer(this._layer);
-        this._viewsMap[viewName] = new ZRSubView(this, view);
+            view.setLayer(this._layer);
+            this._viewsMap[viewName] = new ZRSubView(this, view);
         }
         else {
-        console.log(viewName + " alread exist");
+            console.log(viewName + " alread exist");
         }
 
         this.setViewVisiable(view, visiable);
@@ -52,17 +52,17 @@ export class ZRContainer {
     removeView(view) {
         const viewName = view.getName();
         if (this._viewsMap.hasOwnProperty(viewName)) {
-        this.setViewVisiable(view, false);      // hide view
-        view.setLayer(null);
-        delete this._viewsMap[viewName];
+            this.setViewVisiable(view, false);      // hide view
+            view.setLayer(null);
+            delete this._viewsMap[viewName];
         }
     }
 
     removeAllView() {
         for (var viewName in this._viewsMap) {
-        var view = this._viewsMap[viewName].getView();
-        
-        this.removeView(view);
+            var view = this._viewsMap[viewName].getView();
+
+            this.removeView(view);
         }
     }
 
@@ -73,24 +73,24 @@ export class ZRContainer {
     refreshView(view) {
         const viewName = view.getName();
         if (this._viewsMap.hasOwnProperty(viewName)) {
-        this._viewsMap[viewName].displayRangeChanged();
-        
-        // redraw symbol in zrender due to canvas's position changed
-        this.refreshZR(true);
+            this._viewsMap[viewName].displayRangeChanged();
+
+            // redraw symbol in zrender due to canvas's position changed
+            this.refreshZR(true);
         }
     }
 
     refreshAllView(zoomChanged, type) {
         for (var viewName in this._viewsMap) {
-        var view = this._viewsMap[viewName].getView();
+            var view = this._viewsMap[viewName].getView();
 
-        if (this._viewsMap.hasOwnProperty(viewName)) {
-        this._viewsMap[viewName].displayRangeChanged();
+            if (this._viewsMap.hasOwnProperty(viewName)) {
+                this._viewsMap[viewName].displayRangeChanged();
+            }
         }
-    }
 
-    // redraw symbol in zrender due to canvas's position changed
-    this.refreshZR(true);
+        // redraw symbol in zrender due to canvas's position changed
+        this.refreshZR(true);
     }
 
     release() {
@@ -99,10 +99,10 @@ export class ZRContainer {
 
     refreshZR(immediately) {
         if (immediately) {
-        this._zr.refreshImmediately();
+            this._zr.refreshImmediately();
         }
         else {
-        this._zr.refresh();
+            this._zr.refresh();
         }
     }
 

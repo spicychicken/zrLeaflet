@@ -1,58 +1,63 @@
 import * as L from "leaflet"
 
 const defaultOptions = {
-  move: true,
-  zoom: false
+    move: true,
+    zoom: true
 }
 
 export class LSingleCanvasLayer extends L.Renderer {
-  constructor(options) {
-    super(L.extend({}, defaultOptions, options));
-  }
-
-  getEvents() {
-    var events = L.Renderer.prototype.getEvents.call(this);
-    events.moveend = this._onMoveEnd;
-
-    if (this.options.move) {
-      events.move = this._onMove;
+    constructor(options) {
+        super(L.extend({}, defaultOptions, options));
     }
 
-    if (this.options.zoom) {
-      events.zoomanim = this._onAnimZoom;
+    getEvents() {
+        var events = L.Renderer.prototype.getEvents.call(this);
+        events.moveend = this._onMoveEnd;
+
+        if (this.options.move) {
+            events.move = this._onMove;
+        }
+
+        if (this.options.zoom) {
+            events.zoomanim = this._onAnimZoom;
+        }
+
+        return events;
     }
 
-    return events;
-  }
+    _update() {
+        if (this._map._animatingZoom && this._bounds) { return; }
 
-  _update() {
-    if (this._map._animatingZoom && this._bounds) { return; }
+        L.Renderer.prototype._update.call(this);
 
-    L.Renderer.prototype._update.call(this);
+        this._adjustPositionAndSize(this._bounds.min, this._bounds.getSize());
+    }
 
-    this._adjustPositionAndSize(this._bounds.min, this._bounds.getSize());
-  }
+    _onAnimZoom(t) {
+        L.Renderer.prototype._onAnimZoom.call(this, t);
 
-  _onAnimZoom(t) {
-    L.Renderer.prototype._onAnimZoom.call(this, t);
+        var zoomChanged = this._zoom !== t.target._zoom;
 
-    var zoomChanged = this._zoom !== t.target._zoom;
+        this.refreshAllView(zoomChanged, "zoom");
+    }
 
-    this.refreshAllView(zoomChanged, "zoom");
-  }
+    _onMove(t) {
+        if (this._map._animatingZoom && this._bounds) { return; }
 
-  _onMove(t) {
-    // [To-Do]
-    // this._refreshZRenderContainer(false, "move");
-  }
+        var zoomChanged = this._zoom !== t.target._zoom;
 
-  _onMoveEnd(t) {
-    if (this._map._animatingZoom && this._bounds) { return; }
+        this._update();
 
-    var zoomChanged = this._zoom !== t.target._zoom;
+        this.refreshAllView(zoomChanged, "moveend");
+    }
 
-    this._update();
+    _onMoveEnd(t) {
+        if (this._map._animatingZoom && this._bounds) { return; }
 
-    this.refreshAllView(zoomChanged, "moveend");
-  }
+        var zoomChanged = this._zoom !== t.target._zoom;
+
+        this._update();
+
+        this.refreshAllView(zoomChanged, "moveend");
+    }
 }

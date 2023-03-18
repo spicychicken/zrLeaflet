@@ -445,11 +445,11 @@ china_airplane.getScatterData = function() {
         return res;
     };
 
-	var data = [];
+    var data = [];
     [['北京', BJData], ['上海', SHData], ['广州', GZData]].forEach(function (item, i) {
-		item[1].forEach(function (dataItem) {
-			data.push(geoCoordMap[dataItem[1].name].concat([dataItem[1].value]));
-		});
+        item[1].forEach(function (dataItem) {
+            data.push(geoCoordMap[dataItem[1].name].concat([dataItem[1].value]));
+        });
     });
-	return data;
+    return data;
 }

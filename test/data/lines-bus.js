@@ -5,3 +5,67 @@ Demo_LineBus.getData = function () {
 
     return lines_bus;
 }
+
+function loadBJBus() {
+    var busLines = Demo_LineBus.getData().map(function (busLine, idx) {
+        var prevPt;
+        var points = [];
+        for (var i = 0; i < busLine.length; i += 2) {
+            var pt = [busLine[i], busLine[i + 1]];
+            if (i > 0) {
+                pt = [
+                    prevPt[0] + pt[0],
+                    prevPt[1] + pt[1]
+                ];
+            }
+            prevPt = pt;
+
+            points.push([pt[0] / 1e4, pt[1] / 1e4]);
+        }
+        return points;
+    });
+    return {
+        "type": "Feature",
+        "geometry": {
+            "type": "MultiLineString",
+            "coordinates":busLines
+        }
+    };
+}
+
+function loadBJBusWithEffect() {
+    let lineBusData = Demo_LineBus.getData();
+    let hStep = 300 / (lineBusData.length - 1);
+    var busLines = lineBusData.map(function (busLine, idx) {
+        var prevPt;
+        var points = [];
+        for (var i = 0; i < busLine.length; i += 2) {
+            var pt = [busLine[i], busLine[i + 1]];
+            if (i > 0) {
+                pt = [
+                    prevPt[0] + pt[0],
+                    prevPt[1] + pt[1]
+                ];
+            }
+            prevPt = pt;
+
+            points.push([pt[0] / 1e4, pt[1] / 1e4]);
+        }
+        return {
+          "geometry": {
+            "type": "LineString",
+            "coordinates": points
+          },
+          "type": "Feature",
+          "properties": {
+              opacity: 0.2,
+              stroke: ZL.Utils.color.modifyHSL('#5A94DF', Math.round(hStep * idx)),
+              width: 1
+          }
+        };
+    });
+    return {
+        "type": "FeatureCollection",
+        "features": busLines
+    };
+}
