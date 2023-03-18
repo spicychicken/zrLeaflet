@@ -1,5 +1,6 @@
 import { LMap } from "./leaflet/LMap"
 import { ZLSingleLayer } from "./ZLSingleLayer"
+import { ZLMultiLayer } from "./ZLMultiLayer"
 
 export class ZLMapContainer {
     constructor(id, mapType, options = {}) {
@@ -18,7 +19,12 @@ export class ZLMapContainer {
 
     addLayer(id, options = {}) {
         if (this._idLayerMap.hasOwnProperty(id) == false) {
-            this._idLayerMap[id] = new ZLSingleLayer(options);
+            if (options.hasOwnProperty("type") && options["type"] == "grid") {
+                this._idLayerMap[id] = new ZLMultiLayer(options);
+            }
+            else {
+                this._idLayerMap[id] = new ZLSingleLayer(options);
+            }
             this._leafletMap.addLayer(this._idLayerMap[id]);
         }
 

@@ -66,7 +66,6 @@ export class GeoJsonView extends View {
     }
 
     _renderPoints(id, points, properties, subView) {
-        console.log("point " + points.length);
         points.forEach(p => {
             const pos = subView.latLonToContainerPosition(L.latLng(p[1], p[0]));
             const radius = properties.hasOwnProperty('radius') ? properties['radius'] : 5;
@@ -76,7 +75,6 @@ export class GeoJsonView extends View {
     }
 
     _renderLines(id, lines, properties, subView) {
-        console.log("line " + lines.length);
         lines.forEach(line => {
             const linePoints = line.map(p => {
                 const pos = subView.latLonToContainerPosition(L.latLng(p[1], p[0]));
@@ -88,7 +86,6 @@ export class GeoJsonView extends View {
     }
 
     _renderPolygones(id, polygones, properties, subView) {
-        //console.log("polygon " + polygones.length);
         polygones.forEach(polygon => {
             // [To-Do] inner polygon
             if (polygon.length > 0) {

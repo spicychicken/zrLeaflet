@@ -2,7 +2,7 @@ import * as L from "leaflet"
 
 const defaultOptions = {
     move: true,
-    zoom: false
+    zoom: true
 }
 
 export class LSingleCanvasLayer extends L.Renderer {
@@ -15,11 +15,11 @@ export class LSingleCanvasLayer extends L.Renderer {
         events.moveend = this._onMoveEnd;
 
         if (this.options.move) {
-          events.move = this._onMove;
+            events.move = this._onMove;
         }
 
         if (this.options.zoom) {
-          events.zoomanim = this._onAnimZoom;
+            events.zoomanim = this._onAnimZoom;
         }
 
         return events;
@@ -42,8 +42,13 @@ export class LSingleCanvasLayer extends L.Renderer {
     }
 
     _onMove(t) {
-        // [To-Do]
-        // this._refreshZRenderContainer(false, "move");
+        if (this._map._animatingZoom && this._bounds) { return; }
+
+        var zoomChanged = this._zoom !== t.target._zoom;
+
+        this._update();
+
+        this.refreshAllView(zoomChanged, "moveend");
     }
 
     _onMoveEnd(t) {

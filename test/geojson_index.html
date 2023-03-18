@@ -25,6 +25,7 @@ body {
 <script src="data/geo-json.js"></script>
 <script src="data/lines-bus.js"></script>
 <script src="data/air-quality.js"></script>
+<script src="data/binning.js"></script>
 
 <script>
 var zrl = null;
@@ -51,9 +52,9 @@ function showMap() {
 
 function changeView(center, zoom, data) {
     currentLayer.removeAllView();
+    zrl.getMap().flyTo(center, zoom);
     currentView = new ZL.GeoJsonView("geojson", data);
     currentLayer.addView(currentView);
-    zrl.getMap().flyTo(center, zoom);
     currentLayer.showView(currentView)
 }
 
