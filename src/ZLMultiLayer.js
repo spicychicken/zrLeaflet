@@ -1,4 +1,5 @@
 import { LGridCanvasLayer } from "./leaflet/LGridCanvasLayer"
+import { SeriesView } from "./view/SeriesView";
 import { ZRMultiContainer } from "./zrender/ZRMultiContainer"
 
 const defaultOptions = {
@@ -113,7 +114,7 @@ export class ZLMultiLayer extends LGridCanvasLayer {
         return containers;
     }
 
-    _refreshGridCanvasLayer() {
+    _refreshGridCanvasLayer(zoomChanged) {
         const viewsMap = this._viewsMap;
         const containers = this.getTileRangeContainers();
         containers.forEach(container => {
@@ -124,6 +125,10 @@ export class ZLMultiLayer extends LGridCanvasLayer {
                 container.addView(view, visiable);
             }
         });
+    }
+
+    addSeries(series, visiable) {
+        this.addView(new SeriesView(series), visiable)
     }
 
     addView(view, visiable) {

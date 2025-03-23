@@ -1,4 +1,5 @@
 import { LSingleCanvasLayer } from "./leaflet/LSingleCanvasLayer"
+import { SeriesView } from "./view/SeriesView";
 import { ZRSingleContainer } from "./zrender/ZRSingleContainer"
 
 const defaultOptions = {
@@ -33,6 +34,10 @@ export class ZLSingleLayer extends LSingleCanvasLayer {
 
     _adjustContainerZRToSize(size) {
         this._zrContainer._adjustContainerZRToSize(size.x, size.y);
+    }
+
+    addSeries(series, visiable) {
+        this.addView(new SeriesView(series), visiable)
     }
 
     addView(view, visiable) {

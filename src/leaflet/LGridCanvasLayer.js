@@ -34,7 +34,7 @@ export class LGridCanvasLayer extends L.GridLayer {
 
         L.GridLayer.prototype._onMoveEnd.call(this);
 
-        this._refreshGridCanvasLayer();
+        this._refreshGridCanvasLayer(zoomChanged);
     }
 
     _getTileRange() {

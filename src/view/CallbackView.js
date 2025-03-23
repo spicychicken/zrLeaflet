@@ -7,7 +7,7 @@ export class CallbackView extends View {
         this._callback = callback;
     }
 
-    renderByRange(bbox, subView) {
+    renderByRange(bbox, subView, zoomChanged, type) {
         this._callback(bbox, subView);
     }
 }

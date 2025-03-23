@@ -21,11 +21,7 @@ body {
 </style>
 
 <script src="../dist/zrLeaflet.js"></script>
-<script src="data/hangzhou-tracks.js"></script>
-<script src="data/geo-json.js"></script>
-<script src="data/lines-bus.js"></script>
-<script src="data/air-quality.js"></script>
-<script src="data/binning.js"></script>
+<script src="data/sector-data.js"></script>
 
 <script>
 var zrl = null;
@@ -52,10 +48,8 @@ function showMap() {
 
 function changeView(center, zoom, data) {
     currentLayer.removeAllView();
-    zrl.getMap().flyTo(center, zoom);
-    currentView = new ZL.GeoJsonView("geojson", data);
-    currentLayer.addView(currentView);
-    currentLayer.showView(currentView)
+    // zrl.getMap().flyTo(center, zoom);
+    currentLayer.addSeries(data, true);
 }
 
 function changeViewType(value) {
@@ -74,13 +68,8 @@ function changeViewType(value) {
 </select>
 
 <select class="form-control" style="width:160px" onchange="changeViewType(value)">
-    <option value="changeView([30.240018034923, 120.13066322374], 14, loadHZTracksType1())">杭州热门步行路线</option>
-    <option value="changeView([39.92, 116.46], 10, loadBJBus())">北京公交路线</option>
-    <option value="changeView([39.92, 116.46], 10, loadBJBusWithEffect())">北京公交路线-线特效</option>
-    <option value="changeView([39.92, 116.46], 10, Demo_GeoJson.getData())">GeoJSON</option>
-    <option value="changeView([39.92, 116.46], 10, loadBinning())">Binning</option>
-    <option value="changeView([37.550339, 104.114129], 5, loadAirQuality())">全国主要城市空气质量-1</option>
-    <option value="changeView([39.92, 116.46], 10, loadBinningTest())">BinningTest</option>
+    <option value="changeView([30.240018034923, 120.13066322374], 14, loadSectorData())">Demo_1</option>
+    <option value="changeView([30.240018034923, 120.13066322374], 14, loadSectorData())">Demo_2</option>
 </select>
 </div>
 

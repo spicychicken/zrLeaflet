@@ -23,20 +23,14 @@ function createShapeOptions(type, shape, style) {
 }
 
 export class BasicShape extends Path {
-    constructor(id, type, shape, style) {
+    constructor(type, shape, style) {
         super(createShapeOptions(type, shape, style));
-
-        this._id = id;
     }
 
     buildPath(ctx, shape, closePath) {
         if (_shapeCreator.hasOwnProperty(this.type)) {
             _shapeCreator[this.type].buildPath(ctx, shape, closePath);
         }
-    }
-
-    getID() {
-        return this._id;
     }
 
     setPosition(position) {
@@ -68,6 +62,11 @@ export class BasicShape extends Path {
 
     setStyle(style) {
         this.attr({style: style});
+        return this;
+    }
+
+    setAttr(attr) {
+        this.attr(attr);
         return this;
     }
 }

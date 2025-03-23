@@ -73,7 +73,7 @@ export class ZRContainer {
     refreshView(view) {
         const viewName = view.getName();
         if (this._viewsMap.hasOwnProperty(viewName)) {
-            this._viewsMap[viewName].displayRangeChanged();
+            this._viewsMap[viewName].displayRangeChanged(false, "refresh");
 
             // redraw symbol in zrender due to canvas's position changed
             this.refreshZR(true);
@@ -82,10 +82,8 @@ export class ZRContainer {
 
     refreshAllView(zoomChanged, type) {
         for (var viewName in this._viewsMap) {
-            var view = this._viewsMap[viewName].getView();
-
             if (this._viewsMap.hasOwnProperty(viewName)) {
-                this._viewsMap[viewName].displayRangeChanged();
+                this._viewsMap[viewName].displayRangeChanged(zoomChanged, type);
             }
         }
 
@@ -108,5 +106,34 @@ export class ZRContainer {
 
     latLonToContainerPosition(latLon) {
         return this._layer.latLngToContainerPoint(latLon, this);
+    }
+
+    lengthToDistance(distance) {
+        var length = 0;
+        var latlng = this._layer._map.getCenter();
+
+        var lng = latlng.lng,
+        lat = latlng.lat,
+        crs = this._layer._map.options.crs;
+
+        if (crs.distance === L.CRS.Earth.distance) {
+            var d = Math.PI / 180,
+                latR = distance / L.CRS.Earth.R / d,
+                top = this._layer._map.project([lat + latR, lng]),
+                bottom = this._layer._map.project([lat - latR, lng]),
+                p = top.add(bottom).divideBy(2),
+                lat2 = this._layer._map.unproject(p).lat,
+                lngR = Math.acos((Math.cos(latR * d) - Math.sin(lat * d) * Math.sin(lat2 * d)) /
+                        (Math.cos(lat * d) * Math.cos(lat2 * d))) / d;
+
+            if (isNaN(lngR) || lngR === 0) {
+                lngR = latR / Math.cos(Math.PI / 180 * lat); // Fallback for edge case, #2425
+            }
+
+            length = isNaN(lngR) ? 0 : Math.max(Math.round(p.x - this._layer._map.project([lat2, lng - lngR]).x), 1);
+
+        }
+
+        return length;
     }
 }

@@ -48,7 +48,7 @@ export class LSingleCanvasLayer extends L.Renderer {
 
         this._update();
 
-        this.refreshAllView(zoomChanged, "moveend");
+        this.refreshAllView(zoomChanged, "moving");
     }
 
     _onMoveEnd(t) {

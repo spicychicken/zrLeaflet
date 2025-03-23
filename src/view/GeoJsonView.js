@@ -47,7 +47,9 @@ export class GeoJsonView extends View {
         }
     }
 
-    renderByRange(bbox, subView) {
+    renderByRange(bbox, subView, zoomChanged, type) {
+        subView.removeAll();
+
         // west, south, east, north
         const box = [bbox.getWest(), bbox.getSouth(), bbox.getEast(), bbox.getNorth()];
 
