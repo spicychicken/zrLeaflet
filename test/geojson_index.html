@@ -53,9 +53,12 @@ function showMap() {
 function changeView(center, zoom, data) {
     currentLayer.removeAllView();
     zrl.getMap().flyTo(center, zoom);
-    currentView = new ZL.GeoJsonView("geojson", data);
-    currentLayer.addView(currentView);
-    currentLayer.showView(currentView)
+    var geojson = {
+        "name": "geojson",
+        "type": "geojson",
+        "data": data
+    };
+    currentLayer.addSeries(geojson, true);
 }
 
 function changeViewType(value) {

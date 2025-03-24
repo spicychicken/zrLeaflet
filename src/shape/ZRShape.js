@@ -9,6 +9,7 @@ export class ZRShape extends Group {
         return this._coord;
     }
 
+    // coord: array[lat, lng]
     setGeoCoord(coord) {
         this._coord = coord;
         return this;

@@ -8,8 +8,6 @@ export class ZRSubView {
 
         this._visiable = false;
         this._group = new Group();
-
-        // this._shapeList = {};
     }
 
     getView() {
@@ -36,8 +34,11 @@ export class ZRSubView {
     add(shape) {
         shape._subView = this;
         this._group.add(shape);
+    }
 
-        // this._shapeList[shape.getID()] = shape;
+    remove(shape) {
+        shape._subView = undefined;
+        this._group.remove(shape);
     }
 
     removeAll() {

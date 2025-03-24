@@ -1,5 +1,5 @@
 import { LGridCanvasLayer } from "./leaflet/LGridCanvasLayer"
-import { SeriesView } from "./view/SeriesView";
+import { View } from "./view/View";
 import { ZRMultiContainer } from "./zrender/ZRMultiContainer"
 
 const defaultOptions = {
@@ -128,7 +128,7 @@ export class ZLMultiLayer extends LGridCanvasLayer {
     }
 
     addSeries(series, visiable) {
-        this.addView(new SeriesView(series), visiable)
+        // this.addView(new SeriesView(series), visiable)
     }
 
     addView(view, visiable) {

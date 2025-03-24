@@ -1,5 +1,9 @@
 import { LSingleCanvasLayer } from "./leaflet/LSingleCanvasLayer"
-import { SeriesView } from "./view/SeriesView";
+import { QuadTreeView } from "./view/QuadTreeView";
+import { CallbackView } from "./view/CallbackView";
+import { GeoJsonView } from "./view/GeoJsonView";
+import { GeoJsonVisual } from "./visual/GeoJsonVisual";
+import { Visual } from "./visual/Visual";
 import { ZRSingleContainer } from "./zrender/ZRSingleContainer"
 
 const defaultOptions = {
@@ -37,7 +41,18 @@ export class ZLSingleLayer extends LSingleCanvasLayer {
     }
 
     addSeries(series, visiable) {
-        this.addView(new SeriesView(series), visiable)
+        if (series.hasOwnProperty("type")) {
+            var visual = Visual.newVisual(series["type"], series);
+            if (series["type"] == "geojson") {
+                this.addView(new GeoJsonView(visual), visiable);
+            }
+            else if (series.hasOwnProperty("cb")) {
+                this.addView(new CallbackView(visual), visiable);
+            }
+            else {
+                this.addView(new QuadTreeView(visual), visiable);
+            }
+        }
     }
 
     addView(view, visiable) {
