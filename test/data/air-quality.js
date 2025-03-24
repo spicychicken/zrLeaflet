@@ -1,6 +1,4 @@
-function Demo_AirQuality() {}
-
-Demo_AirQuality.getData = function () {
+function getAirQualityData() {
     var data = [
          {name: '海门', value: 9},
          {name: '鄂尔多斯', value: 12},
@@ -403,8 +401,8 @@ Demo_AirQuality.getData = function () {
     return convertData(data);
 }
 
-function loadAirQuality() {
-    var points = Demo_AirQuality.getData().map(function (d, idx) {
+function loadAirQualityData() {
+    var points = getAirQualityData().map(function (d, idx) {
         const value = d.value;
         return {
             "type": "Feature",
@@ -422,7 +420,11 @@ function loadAirQuality() {
     });
 
     return {
-        "type": "FeatureCollection",
-        "features": points
+        "name": "binning test",
+        "type": "geojson",
+        "data": {
+            "type": "FeatureCollection",
+            "features": points
+        }
     };
 }

@@ -1,16 +1,25 @@
-import { Line, Polyline, Circle, Sector, Rect } from "zrender"
+import { Line, Polyline, Circle, Sector, Rect, Arc, BezierCurve, Droplet, Ellipse, Heart, Isogon, Ring, Rose, Star, Trochoid  } from "zrender"
 import { Polygon } from "./Polygon"
-import { point } from "leaflet";
 
 export const ShapeCreator = {
     _shapeProxy: {
         'circle': new Circle(),
-        'point': new Circle(),
-        'sector': new Sector(),
-        'line': new Line(),
+        'point': new Circle(),          // 圆形
+        'sector': new Sector(),         // 扇形
+        'line': new Line(),             // 直线
         'polyline': new Polyline(),
-        'polygon': new Polygon(),
-        'rect': new Rect()
+        'polygon': new Polygon(),       // 多边形
+        'rect': new Rect(),             // 矩形
+        'arc': new Arc(),               // 圆弧
+        'bezier': new BezierCurve(),    // 贝塞尔曲线
+        'Droplet': new Droplet(),       // 水滴形状
+        'ellipse': new Ellipse(),       // 椭圆形状
+        'heart': new Heart(),           // 心形
+        'isogon': new Isogon(),         // 正多边形
+        'ring': new Ring(),             // 圆环
+        'rose': new Rose(),             // 玫瑰线
+        'star': new Star(),             // n角星（n>3）
+        'trochoid': new Trochoid()      // 内外旋轮曲线
     },
 
     point: function(bound) {

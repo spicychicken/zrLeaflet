@@ -1,13 +1,18 @@
 class Sector extends ZL.Shape {
     SECTOR_SHOW_SIZE = 50
 
-    constructor(data) {
+    constructor(data, options = {}) {
         super();
 
         this.setGeoCoord([data[1], data[0]]);
         this._azimuths = data[2];
+        this._converage = data[3];
+        this._options = options;
 
         this.__createSectorShape();
+        
+        this.rippleGroup = new ZL.createGroup();
+        this.add(this.rippleGroup);
     }
 
     __createSectorShape() {
@@ -107,12 +112,143 @@ class Sector extends ZL.Shape {
         this._size = this.calcSize(zrView);
         this._site.setSize([this._size, this._size]);
         this.updateSectorGroup();
+
+        // update ripple
+        if (this._options["converage"]) {
+            this.updateRipple(zrView);
+        }
+    }
+
+    updateRipple(zrView) {
+        var effectCfg = {};
+
+        effectCfg.showEffectOn = this._options['showEffectOn'];
+        effectCfg.rippleScale = this._converage / this._size;
+        effectCfg.brushType = this._options['rippleEffect']["brushType"];
+        effectCfg.period = this._options['rippleEffect']["period"] * 1000;
+        effectCfg.symbolType = "circle";
+        effectCfg.color = "green";
+
+        this.off('mouseover').off('mouseout').off('emphasis').off('normal');
+
+        if (effectCfg.showEffectOn === 'render') {
+            this._effectCfg
+                ? this.updateEffectAnimation(effectCfg)
+                : this.startEffectAnimation(effectCfg);
+
+            this._effectCfg = effectCfg;
+        }
+        else {
+            // Not keep old effect config
+            this._effectCfg = null;
+
+            this.stopEffectAnimation();
+            var symbol = this.symbolBts;
+            var onEmphasis = function () {
+                symbol.trigger('emphasis');
+                if (effectCfg.showEffectOn !== 'render') {
+                    this.startEffectAnimation(effectCfg);
+                }
+            };
+            var onNormal = function () {
+                symbol.trigger('normal');
+                if (effectCfg.showEffectOn !== 'render') {
+                    this.stopEffectAnimation();
+                }
+            };
+            this.on('mouseover', onEmphasis, this)
+                .on('mouseout', onNormal, this)
+                .on('emphasis', onEmphasis, this)
+                .on('normal', onNormal, this);
+        }
+
+        this._effectCfg = effectCfg;
+    }
+
+    startEffectAnimation(effectCfg) {
+        var EFFECT_RIPPLE_NUMBER = 1;
+        var symbolType = effectCfg.symbolType;
+        var color = effectCfg.color;
+        var rippleGroup = this.rippleGroup;
+
+        var getRandom = function(min, max) {
+            var range = max - min;   
+            var rand = Math.random();   
+            return(min + Math.round(rand * range));
+        };
+
+        for (var i = 0; i < EFFECT_RIPPLE_NUMBER; i++) {
+            var ripplePath = ZL.createBasicShape(symbolType, [0, 0, 2], color);
+            ripplePath.attr({
+                style: {
+                    strokeNoScale: true
+                },
+                z2: 99,
+                silent: true,
+                scale: [0.5, 0.5]
+            });
+
+            // + random offset
+            var delay = -i / EFFECT_RIPPLE_NUMBER * effectCfg.period + getRandom(500, 1000);
+            ripplePath.animate('', true)
+                .when(effectCfg.period, {
+                    scale: [effectCfg.rippleScale, effectCfg.rippleScale]
+                })
+                .delay(delay)
+                .start();
+            ripplePath.animateStyle(true)
+                .when(effectCfg.period, {
+                    opacity: 0.5
+                })
+                .delay(delay)
+                .start();
+
+            rippleGroup.add(ripplePath); 
+        }
+
+        this.updateRipplePath(rippleGroup, effectCfg);
+    }
+
+    updateEffectAnimation(effectCfg) {
+        var oldEffectCfg = this._effectCfg;
+        var rippleGroup = this.rippleGroup;
+    
+        var DIFFICULT_PROPS = ['symbolType', 'period', 'rippleScale'];
+        for (var i = 0; i < DIFFICULT_PROPS.length; i++) {
+            var propName = DIFFICULT_PROPS[i];
+            if (oldEffectCfg[propName] !== effectCfg[propName]) {
+                this.stopEffectAnimation();
+                this.startEffectAnimation(effectCfg);
+                return;
+            }
+        }
+    
+        this.updateRipplePath(rippleGroup, effectCfg);
+    };
+
+    stopEffectAnimation() {
+        this.rippleGroup.removeAll();
+    };
+
+    updateRipplePath(rippleGroup, effectCfg) {
+        rippleGroup.eachChild(function (ripplePath) {
+            ripplePath.attr({
+                // z: effectCfg.z,
+                // zlevel: effectCfg.zlevel,
+                style: {
+                    stroke: effectCfg.brushType === 'stroke' ? effectCfg.color : null,
+                    fill: effectCfg.brushType === 'fill' ? effectCfg.color : null
+                }
+            });
+        });
     }
 }
 
 class SectorVisual extends ZL.Visual {
     constructor(series) {
         super(series);
+
+        this.options = series["options"];
     }
 
     prepareData(callback) {
@@ -124,7 +260,7 @@ class SectorVisual extends ZL.Visual {
 
     newShape(index, zrView) {
         var data = this.getSeriesData()[index];
-        var shape = new Sector(data);
+        var shape = new Sector(data, this.options);
 
         shape.updateLayout(zrView);
         return shape;
@@ -137,7 +273,7 @@ class SectorVisual extends ZL.Visual {
 
 ZL.Visual.registerVisual("sector", SectorVisual);
 
-function loadSectorData() {
+function getSectorData() {
     var getRandom = function(min, max) {
         var range = max - min;   
         var rand = Math.random();   
@@ -177,11 +313,39 @@ function loadSectorData() {
             var index = getRandom(0, 6);
             sector_data[i][2].push([AzimuthList[index], getRandom(20000, 40000), getRandom(10, 30), getRandom(1, 30), getRandom(500, 3000)]);
         }
+        sector_data[i].push(getRandom(500, 3000));
     }
+    return sector_data;
+}
+
+function loadSectorData() {
+    var sector_data = getSectorData();
 
     return {
-        name: 'MCC 262',
+        name: 'sector',
         type: 'sector',
         data: sector_data
+    };
+}
+
+function loadSectorDataWithConverage() {
+    var sector_data = getSectorData();
+
+    return {
+        name: 'sector',
+        type: 'sector',
+        data: sector_data,
+
+        options: {
+            converage: true,
+            // from echats
+            showEffectOn: 'render',
+            effectType: 'ripple',
+            rippleEffect: {
+                period: 4,
+                // Brush type can be fill or stroke
+                brushType: 'stroke'
+            }
+        }
     };
 }
