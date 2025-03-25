@@ -2,12 +2,12 @@
 // View -> ID: {ZRContainer, Object}
 
 export class View {
-    constructor(name) {
-        this._name = name;
+    constructor(visual) {
+        this._visual = visual;
     }
 
     getName() {
-        return this._name;
+        return this._visual.getName();
     }
 
     show() {
@@ -35,5 +35,13 @@ export class View {
         if (this._lLayer) {
             this._lLayer.refreshView(this);
         }
+    }
+
+    renderByRange(bbox, subView, zoomChanged, type) {
+        this._visual.beforeRender && this._visual.beforeRender(bbox, subView);
+
+        this._visual.render && this._visual.render([], subView);
+
+        this._visual.afterRender && this._visual.afterRender(bbox, subView);
     }
 }

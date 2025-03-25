@@ -22,23 +22,24 @@ body {
 
 <script src="../dist/zrLeaflet.js"></script>
 <script src="data/hangzhou-tracks.js"></script>
+<script src="data/bj-lines-bus.js"></script>
 <script src="data/geo-json.js"></script>
-<script src="data/lines-bus.js"></script>
-<script src="data/air-quality.js"></script>
 <script src="data/binning.js"></script>
+<script src="data/air-quality.js"></script>
+<script src="data/sector-data.js"></script>
 
 <script>
 var zrl = null;
 var currentLayer = null;
-var currentView = null;
+var currentSeries = null;
 
 function changeLayerType(type) {
     zrl.removeLayer("layer-1");
 
     currentLayer = zrl.addLayer("layer-1", {"type": type});
 
-    if (currentView != null) {
-        currentLayer.addView(currentView, true);
+    if (currentSeries != null) {
+        currentLayer.addSeries(currentSeries, true);
     }
 }
 
@@ -50,16 +51,17 @@ function showMap() {
     changeLayerType("single");
 }
 
-function changeView(center, zoom, data) {
+function changeView(center, zoom, series) {
     currentLayer.removeAllView();
     zrl.getMap().flyTo(center, zoom);
-    currentView = new ZL.GeoJsonView("geojson", data);
-    currentLayer.addView(currentView);
-    currentLayer.showView(currentView)
+    currentLayer.addSeries(series, true);
+    currentSeries = series;
 }
 
 function changeViewType(value) {
-    eval(value);
+    if (value != "") {
+        eval(value);
+    }
 }
 </script>
 
@@ -68,19 +70,22 @@ function changeViewType(value) {
 <div style="width:100%;height:100%;z-index:0" id="map-canvas"></div>
 
 <div style="position: fixed;top: 10px;bottom: 0;left: 60px;width: 182px;overflow-y: hidden;z-index: 4;">
-<select class="form-control" style="width:160px" onchange="changeLayerType(value)">
+<!--- <select class="form-control" style="width:160px" onchange="changeLayerType(value)">
     <option value="single">Single Canvas</option>
     <option value="grid">Grid Canvas</option>
-</select>
+</select> --->
 
 <select class="form-control" style="width:160px" onchange="changeViewType(value)">
-    <option value="changeView([30.240018034923, 120.13066322374], 14, loadHZTracksType1())">杭州热门步行路线</option>
-    <option value="changeView([39.92, 116.46], 10, loadBJBus())">北京公交路线</option>
-    <option value="changeView([39.92, 116.46], 10, loadBJBusWithEffect())">北京公交路线-线特效</option>
-    <option value="changeView([39.92, 116.46], 10, Demo_GeoJson.getData())">GeoJSON</option>
-    <option value="changeView([39.92, 116.46], 10, loadBinning())">Binning</option>
-    <option value="changeView([37.550339, 104.114129], 5, loadAirQuality())">全国主要城市空气质量-1</option>
-    <option value="changeView([39.92, 116.46], 10, loadBinningTest())">BinningTest</option>
+    <option value="">GeoJson--------------------</option>
+    <option value="changeView([30.240018034923, 120.13066322374], 14, loadHangZhouTracksData())">杭州热门步行路线</option>
+    <option value="changeView([39.92, 116.46], 10, loadBJLinesBusData())">北京公交路线</option>
+    <option value="changeView([39.92, 116.46], 10, loadBJLinesBusDataWithEffect())">北京公交路线-线特效</option>
+    <option value="changeView([39.92, 116.46], 10, loadGeoJsonData())">GeoJSON</option>
+    <option value="changeView([39.92, 116.46], 10, loadBinningData())">Binning</option>
+    <option value="changeView([37.550339, 104.114129], 5, loadAirQualityData())">全国主要城市空气质量-1</option>
+    <option value="">Other------------------------</option>
+    <option value="changeView([31.35027, 111.0498], 8, loadSectorData())">Sector</option>
+    <option value="changeView([31.35027, 111.0498], 8, loadSectorDataWithConverage())">Sector(Converage)</option>
 </select>
 </div>
 

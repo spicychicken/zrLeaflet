@@ -1,5 +1,9 @@
 import { LGridCanvasLayer } from "./leaflet/LGridCanvasLayer"
 import { ZRMultiContainer } from "./zrender/ZRMultiContainer"
+import { QuadTreeView } from "./view/QuadTreeView";
+import { CallbackView } from "./view/CallbackView";
+import { GeoJsonView } from "./view/GeoJsonView";
+import { Visual } from "./visual/Visual";
 
 const defaultOptions = {
     padding: 0,
@@ -113,7 +117,7 @@ export class ZLMultiLayer extends LGridCanvasLayer {
         return containers;
     }
 
-    _refreshGridCanvasLayer() {
+    _refreshGridCanvasLayer(zoomChanged) {
         const viewsMap = this._viewsMap;
         const containers = this.getTileRangeContainers();
         containers.forEach(container => {
@@ -124,6 +128,22 @@ export class ZLMultiLayer extends LGridCanvasLayer {
                 container.addView(view, visiable);
             }
         });
+    }
+
+    addSeries(series, visiable) {
+        // this.addView(new SeriesView(series), visiable)
+        if (series.hasOwnProperty("type")) {
+            var visual = Visual.newVisual(series["type"], series);
+            if (series["type"] == "geojson") {
+                this.addView(new GeoJsonView(visual), visiable);
+            }
+            else if (series.hasOwnProperty("cb")) {
+                this.addView(new CallbackView(visual), visiable);
+            }
+            else {
+                this.addView(new QuadTreeView(visual), visiable);
+            }
+        }
     }
 
     addView(view, visiable) {

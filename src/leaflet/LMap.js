@@ -1,30 +1,48 @@
 import * as L from "leaflet"
 
+// see Leaflet.ChineseTmsProviders
 const tileLayerMapOptions = {
     "openstreetmap": {
         'type': 'OpenStreetMap',
-        'company': 'OpenStreetMap Community',
-        'name': 'OSM',
-        'link': 'http://osm.org/copyright',
         'url': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+    },
+    "gaodenormal": {
+        "type": "GaoDe Normal",
+        "url": "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+        "subdomains": ["1", "2", "3", "4"]
+    },
+    "tencentnormal": {
+        "type": "Tencent Normal",
+        "url": "http://rt{s}.map.gtimg.com/tile?z={z}&x={x}&y={-y}&type=vector&styleid=3",
+        "subdomains": "0123"
+    },
+    "tencentterrain": {
+        "type": "Tencent Terrain",
+        "url": "http://p{s}.map.gtimg.com/demTiles/{z}/{sx}/{sy}/{x}_{-y}.jpg",
+        "subdomains": "0123"
     }
 };
 
 class LeafletMapTileLayer extends L.TileLayer {
     getTileUrl(tilePoint) {
-        var urlArgs, getUrlArgs = this.options.getUrlArgs;
-        if (getUrlArgs) { 
-            urlArgs = getUrlArgs(tilePoint);
-        } else {
-            urlArgs = {
-                z: tilePoint.z,
-                x: tilePoint.x,
-                y: tilePoint.y
-            };
+        var urlArgs = {
+            s: this._getSubdomain(tilePoint),
+            x: tilePoint.x,
+            y: tilePoint.y,
+            z: this._getZoomForUrl(),
+        };
+
+        if (this._map && !this._map.options.crs.infinite) {
+            var invertedY = this._globalTileRange.max.y - tilePoint.y;
+            if (this.options.tms) {
+                    urlArgs['y'] = invertedY;
+            }
+            urlArgs['-y'] = invertedY;
         }
-        return L.Util.template(this._url, L.extend(urlArgs, this.options, {
-            s: this._getSubdomain(tilePoint)
-        }));
+
+        urlArgs.sx = urlArgs.x >> 4
+        urlArgs.sy = ((1 << urlArgs.z) - urlArgs.y) >> 4
+        return L.Util.template(this._url, L.Util.extend(urlArgs, this.options));
     }
 }
 
@@ -78,18 +96,18 @@ export class LMap extends L.Map {
         * 10km, 5km, 3km, 2km, 1km, 500m, 200m, 100m, 50m, 30m]
         **/
         options = L.extend({}, defaultLeafletConfiguration, options);
+        var tileLayerOptions = typeof baseMap == 'object' ? baseMap : tileLayerMapOptions[baseMap];
+        // special for baidu
+        if ("crs" in tileLayerOptions) {
+            options["crs"] = tileLayerOptions["crs"]
+        }
 
         L.Map.prototype.initialize.call(this, id, options);
 
-        this._setBaseMap(baseMap);
+        this.baseMap = new LeafletMapTileLayer(tileLayerOptions.url, tileLayerOptions).addTo(this);
 
         if (options.mousePosition != false) {
             new MousePosition(options).addTo(this);
         }
-    }
-
-    _setBaseMap(baseMap) {
-        var tileLayerOptions = typeof baseMap == 'object' ? baseMap : tileLayerMapOptions[baseMap];
-        this.baseMap = new LeafletMapTileLayer(tileLayerOptions.url, tileLayerOptions).addTo(this);
     }
 }

@@ -1,6 +1,4 @@
-function Demo_GeoJson() {}
-
-Demo_GeoJson.getData = function () {
+function loadGeoJsonData() {
     var pointGeojson = {
       "type": "Point",
       "coordinates": [
@@ -1186,23 +1184,10 @@ Demo_GeoJson.getData = function () {
         innerPolygons
         ]
     }
-    return geojson;
-}
-
-function loadHZTracksType1() {
-    var tracks = Demo_HZ_Tracks.getData().map(function (track, idx) {
-        var points = track.map(item => {
-            return item.coord;
-        });
-        
-        return {
-          "type": "LineString",
-          "coordinates": points
-        };
-    });
 
     return {
-      "type": "GeometryCollection",
-      "geometries": tracks
+        "name": "geojson",
+        "type": "geojson",
+        "data": geojson
     };
 }

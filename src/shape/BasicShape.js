@@ -1,42 +1,25 @@
 import * as L from "leaflet"
-import { Line, Polyline, Circle, Sector, Rect, Path } from "zrender"
-import { Polygon } from "./Polygon"
-
-var _shapeCreator = {
-    'circle': new Circle(),
-    'point': new Circle(),
-    'sector': new Sector(),
-    'line': new Line(),
-    'polyline': new Polyline(),
-    'polygon': new Polygon(),
-    'rect': new Rect()
-};
-
-function createShapeOptions(type, shape, style) {
-    const hasType = _shapeCreator.hasOwnProperty(type);
-
-    return {
-        type: type,
-        shape: hasType ? L.extend({}, _shapeCreator[type].shape, shape) : shape,
-        style: hasType ? L.extend({}, _shapeCreator[type].style, style) : style,
-    };
-}
+import { Path } from "zrender"
+import { ShapeCreator } from "./ShapeCreator"
 
 export class BasicShape extends Path {
-    constructor(id, type, shape, style) {
-        super(createShapeOptions(type, shape, style));
-
-        this._id = id;
+    constructor(type, bound, style) {
+        super(ShapeCreator.create(type, bound, style));
     }
 
     buildPath(ctx, shape, closePath) {
-        if (_shapeCreator.hasOwnProperty(this.type)) {
-            _shapeCreator[this.type].buildPath(ctx, shape, closePath);
-        }
+        ShapeCreator.build(this.type, ctx, shape, closePath);
     }
 
-    getID() {
-        return this._id;
+    setColor(color) {
+        if (this.type === 'line') {
+            this.style.stroke = color;
+        }
+        else {
+            this.style.fill && (this.style.fill = color);
+            this.style.stroke && (this.style.stroke = color);
+        }
+        this.dirty(false);
     }
 
     setPosition(position) {
@@ -68,6 +51,11 @@ export class BasicShape extends Path {
 
     setStyle(style) {
         this.attr({style: style});
+        return this;
+    }
+
+    setAttr(attr) {
+        this.attr(attr);
         return this;
     }
 }

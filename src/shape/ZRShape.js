@@ -5,6 +5,21 @@ export class ZRShape extends Group {
         super();
     }
 
+    getGeoCoord() {
+        return this._coord;
+    }
+
+    // coord: array[lat, lng]
+    setGeoCoord(coord) {
+        this._coord = coord;
+        return this;
+    }
+
+    setAttr(attr) {
+        this.attr(attr);
+        return this;
+    }
+
     setPosition(position) {
         this.attr('position', position);
         return this;
