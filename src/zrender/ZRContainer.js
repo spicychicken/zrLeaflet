@@ -42,9 +42,6 @@ export class ZRContainer {
             view.setLayer(this._layer);
             this._viewsMap[viewName] = new ZRSubView(this, view);
         }
-        else {
-            console.log(viewName + " alread exist");
-        }
 
         this.setViewVisiable(view, visiable);
     }

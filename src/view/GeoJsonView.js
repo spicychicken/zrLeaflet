@@ -1,7 +1,7 @@
 import * as turf from "@turf/turf"
 
 import { View } from "./View"
-import { GeoJsonParser } from "../geojson/GeoJsonParser"
+import { GeoJsonVisual } from "../visual/GeoJsonVisual"
 
 export class GeoJsonView extends View {
     constructor(visual) {

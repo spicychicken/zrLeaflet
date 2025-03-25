@@ -1,10 +1,9 @@
 import { LSingleCanvasLayer } from "./leaflet/LSingleCanvasLayer"
+import { ZRSingleContainer } from "./zrender/ZRSingleContainer"
 import { QuadTreeView } from "./view/QuadTreeView";
 import { CallbackView } from "./view/CallbackView";
 import { GeoJsonView } from "./view/GeoJsonView";
-import { GeoJsonVisual } from "./visual/GeoJsonVisual";
 import { Visual } from "./visual/Visual";
-import { ZRSingleContainer } from "./zrender/ZRSingleContainer"
 
 const defaultOptions = {
     padding: 0.1,

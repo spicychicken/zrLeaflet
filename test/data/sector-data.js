@@ -115,51 +115,22 @@ class Sector extends ZL.Shape {
 
         // update ripple
         if (this._options["converage"]) {
-            this.updateRipple(zrView);
+            this.updateRipple();
         }
     }
 
-    updateRipple(zrView) {
+    updateRipple() {
         var effectCfg = {};
 
-        effectCfg.showEffectOn = this._options['showEffectOn'];
         effectCfg.rippleScale = this._converage / this._size;
         effectCfg.brushType = this._options['rippleEffect']["brushType"];
         effectCfg.period = this._options['rippleEffect']["period"] * 1000;
-        effectCfg.symbolType = "circle";
         effectCfg.color = "green";
 
         this.off('mouseover').off('mouseout').off('emphasis').off('normal');
 
-        if (effectCfg.showEffectOn === 'render') {
-            this._effectCfg
-                ? this.updateEffectAnimation(effectCfg)
-                : this.startEffectAnimation(effectCfg);
-
-            this._effectCfg = effectCfg;
-        }
-        else {
-            // Not keep old effect config
-            this._effectCfg = null;
-
-            this.stopEffectAnimation();
-            var symbol = this.symbolBts;
-            var onEmphasis = function () {
-                symbol.trigger('emphasis');
-                if (effectCfg.showEffectOn !== 'render') {
-                    this.startEffectAnimation(effectCfg);
-                }
-            };
-            var onNormal = function () {
-                symbol.trigger('normal');
-                if (effectCfg.showEffectOn !== 'render') {
-                    this.stopEffectAnimation();
-                }
-            };
-            this.on('mouseover', onEmphasis, this)
-                .on('mouseout', onNormal, this)
-                .on('emphasis', onEmphasis, this)
-                .on('normal', onNormal, this);
+        if (!this._effectCfg) {
+            this.startEffectAnimation(effectCfg);
         }
 
         this._effectCfg = effectCfg;
@@ -167,8 +138,6 @@ class Sector extends ZL.Shape {
 
     startEffectAnimation(effectCfg) {
         var EFFECT_RIPPLE_NUMBER = 1;
-        var symbolType = effectCfg.symbolType;
-        var color = effectCfg.color;
         var rippleGroup = this.rippleGroup;
 
         var getRandom = function(min, max) {
@@ -178,10 +147,12 @@ class Sector extends ZL.Shape {
         };
 
         for (var i = 0; i < EFFECT_RIPPLE_NUMBER; i++) {
-            var ripplePath = ZL.createBasicShape(symbolType, [0, 0, 2], color);
+            var ripplePath = ZL.createBasicShape("circle", [0, 0, 2], effectCfg.color);
             ripplePath.attr({
                 style: {
-                    strokeNoScale: true
+                    strokeNoScale: true,
+                    stroke: effectCfg.brushType === 'stroke' ? effectCfg.color : null,
+                    fill: effectCfg.brushType === 'fill' ? effectCfg.color : null
                 },
                 z2: 99,
                 silent: true,
@@ -198,50 +169,18 @@ class Sector extends ZL.Shape {
                 .start();
             ripplePath.animateStyle(true)
                 .when(effectCfg.period, {
-                    opacity: 0.5
+                    opacity: 0
                 })
                 .delay(delay)
                 .start();
 
             rippleGroup.add(ripplePath); 
         }
-
-        this.updateRipplePath(rippleGroup, effectCfg);
     }
-
-    updateEffectAnimation(effectCfg) {
-        var oldEffectCfg = this._effectCfg;
-        var rippleGroup = this.rippleGroup;
-    
-        var DIFFICULT_PROPS = ['symbolType', 'period', 'rippleScale'];
-        for (var i = 0; i < DIFFICULT_PROPS.length; i++) {
-            var propName = DIFFICULT_PROPS[i];
-            if (oldEffectCfg[propName] !== effectCfg[propName]) {
-                this.stopEffectAnimation();
-                this.startEffectAnimation(effectCfg);
-                return;
-            }
-        }
-    
-        this.updateRipplePath(rippleGroup, effectCfg);
-    };
 
     stopEffectAnimation() {
         this.rippleGroup.removeAll();
     };
-
-    updateRipplePath(rippleGroup, effectCfg) {
-        rippleGroup.eachChild(function (ripplePath) {
-            ripplePath.attr({
-                // z: effectCfg.z,
-                // zlevel: effectCfg.zlevel,
-                style: {
-                    stroke: effectCfg.brushType === 'stroke' ? effectCfg.color : null,
-                    fill: effectCfg.brushType === 'fill' ? effectCfg.color : null
-                }
-            });
-        });
-    }
 }
 
 class SectorVisual extends ZL.Visual {
@@ -339,12 +278,10 @@ function loadSectorDataWithConverage() {
         options: {
             converage: true,
             // from echats
-            showEffectOn: 'render',
-            effectType: 'ripple',
             rippleEffect: {
                 period: 4,
                 // Brush type can be fill or stroke
-                brushType: 'stroke'
+                brushType: 'fill'
             }
         }
     };
