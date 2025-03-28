@@ -62,7 +62,7 @@ function loadBJLinesBusDataWithEffect() {
           "type": "Feature",
           "properties": {
               opacity: 0.2,
-              stroke: ZL.Utils.color.modifyHSL('#5A94DF', Math.round(hStep * idx)),
+              stroke: ZL.Z.color.modifyHSL('#5A94DF', Math.round(hStep * idx)),
               width: 1
           }
         };

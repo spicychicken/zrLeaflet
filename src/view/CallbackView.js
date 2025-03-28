@@ -1,10 +1,10 @@
 import { View } from "./View"
 
 export class CallbackView extends View {
-    constructor(visual, callback) {
+    constructor(visual) {
         super(visual);
 
-        this._callback = callback;
+        this._callback = visual.getSeries()["cb"];
     }
 
     renderByRange(bbox, subView, zoomChanged, type) {

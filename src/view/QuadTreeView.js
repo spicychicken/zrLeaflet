@@ -32,8 +32,6 @@ export class QuadTreeView extends View {
 
         const elements = this._geoQuadTree.retrieve(area);
 
-        console.log(subView, bbox, elements);
-
         var seriesView = this;
         new ArrayDiffer().add(function (newIdx) {
             var shape = seriesView._visual.newShape(elements[newIdx]["data"]["index"], subView);

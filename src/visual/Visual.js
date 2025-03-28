@@ -7,6 +7,10 @@ export class Visual {
         return this._series["name"];
     }
 
+    getSeries() {
+        return this._series;
+    }
+
     getSeriesData() {
         return this._series["data"];
     }

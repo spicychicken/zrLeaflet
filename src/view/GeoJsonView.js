@@ -17,11 +17,12 @@ export class GeoJsonView extends View {
     _getClipFeatureByRange(feature, box) {
         if (feature.geometry.type == "Point") {
             // returns {FeatureCollection<Point>} points that land within at least one polygon
-            return turf.within(feature, turf.bboxPolygon(box));
+            return turf.pointsWithinPolygon(feature, turf.bboxPolygon(box));
+            // return turf.within(feature, turf.bboxPolygon(box));
         }
         else if (feature.geometry.type == "MultiPoint") {
             // returns {FeatureCollection<Point>} points that land within at least one polygon
-            return turf.within(turf.points(feature.geometry.coordinates, feature.properties), turf.bboxPolygon(box));
+            return turf.pointsWithinPolygon(turf.points(feature.geometry.coordinates, feature.properties), turf.bboxPolygon(box));
         }
         else {
             // returns {Feature<LineString|MultiLineString|Polygon|MultiPolygon>} clipped Feature

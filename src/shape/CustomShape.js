@@ -74,3 +74,11 @@ export class Arrow extends Path {
         ctx.lineTo(shape.cx, shape.cy + shape.height);
     }
 }
+
+const arcLine = {
+    x1: 0,
+    y1: 0,
+    x2: 0,
+    y2: 0,
+    smooth: false
+};

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>GeoJson</title>
+<title>zrLeaflet Demo</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" crossorigin="" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -27,6 +27,8 @@ body {
 <script src="data/binning.js"></script>
 <script src="data/air-quality.js"></script>
 <script src="data/sector-data.js"></script>
+<script src="data/earthquake.js"></script>
+<script src="data/china-train.js"></script>
 
 <script>
 var zrl = null;
@@ -62,6 +64,10 @@ function changeViewType(value) {
     if (value != "") {
         eval(value);
     }
+    else {
+        currentLayer.removeAllView();
+        currentSeries = null;
+    }
 }
 </script>
 
@@ -77,15 +83,16 @@ function changeViewType(value) {
 
 <select class="form-control" style="width:160px" onchange="changeViewType(value)">
     <option value="">GeoJson--------------------</option>
-    <option value="changeView([30.240018034923, 120.13066322374], 14, loadHangZhouTracksData())">杭州热门步行路线</option>
-    <option value="changeView([39.92, 116.46], 10, loadBJLinesBusData())">北京公交路线</option>
-    <option value="changeView([39.92, 116.46], 10, loadBJLinesBusDataWithEffect())">北京公交路线-线特效</option>
+    <option value="changeView([30.240018034923, 120.13066322374], 14, loadHangZhouTracksData())">HangZhou</option>
+    <option value="changeView([39.92, 116.46], 10, loadBJLinesBusData())">BeiJing Bus</option>
+    <option value="changeView([39.92, 116.46], 10, loadBJLinesBusDataWithEffect())">BeiJing Bus-1</option>
     <option value="changeView([39.92, 116.46], 10, loadGeoJsonData())">GeoJSON</option>
     <option value="changeView([39.92, 116.46], 10, loadBinningData())">Binning</option>
-    <option value="changeView([37.550339, 104.114129], 5, loadAirQualityData())">全国主要城市空气质量-1</option>
+    <option value="changeView([37.550339, 104.114129], 5, loadAirQualityData())">Air Quality</option>
     <option value="">Other------------------------</option>
     <option value="changeView([31.35027, 111.0498], 8, loadSectorData())">Sector</option>
     <option value="changeView([31.35027, 111.0498], 8, loadSectorDataWithConverage())">Sector(Converage)</option>
+    <option value="changeView([36.92, 101.46], 5, loadChainTrainData())">China Train</option>
 </select>
 </div>
 

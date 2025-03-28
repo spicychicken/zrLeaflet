@@ -15,6 +15,10 @@ export class ZRSingleContainer extends ZRContainer {
         this._adjustElementPosAndSize(this._container, bounds.min, bounds.getSize());
         this._zr = zrender.init(this._container);
 
+        this._zr.configLayer(10, {
+            motionBlur: true,
+            lastFrameAlpha: 0.95});
+
         return this._container;
     }
 
