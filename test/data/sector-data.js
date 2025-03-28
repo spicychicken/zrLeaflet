@@ -11,12 +11,12 @@ class Sector extends ZL.Shape {
 
         this.__createSectorShape();
         
-        this.rippleGroup = new ZL.createGroup();
+        this.rippleGroup = new ZL.Z.Group();
         this.add(this.rippleGroup);
     }
 
     __createSectorShape() {
-        this._site = ZL.createBasicShape("circle", [0, 0, 0.125]);
+        this._site = ZL.createShape("circle", {cx: 0, cy: 0, r: 0.125});
         this._site.setColor("grey");
         this._site.setAttr({
             style: {
@@ -55,7 +55,8 @@ class Sector extends ZL.Shape {
                 }
 
                 // x + w / 2, y: acme, [x + w|y + h, x|y + h]
-                var sector = ZL.createBasicShape("sector", [0, azimuthMap[azimuth] * 0.5 + 0.2, 0, 1, 75, 105]);
+                var sector = ZL.createShape("sector", {cx: 0, cy: azimuthMap[azimuth] * 0.5 + 0.2, r0: 0, r: 1, 
+                                    startAngle: 75 * Math.PI / 180, endAngle: 105 * Math.PI / 180});
                 sector.setColor("grey");
                 sector.setAttr({
                     style: {
@@ -79,7 +80,7 @@ class Sector extends ZL.Shape {
     updateSectorGroup() {
         if (this._size > this.SECTOR_SHOW_SIZE) {
             if (!this.sectorGroup) {
-                this.sectorGroup = new ZL.createGroup();
+                this.sectorGroup = new ZL.Z.Group();
                 this.add(this.sectorGroup);
                 this.sectorGroup.attr({scale: [this._size, this._size]});
             }
@@ -125,7 +126,7 @@ class Sector extends ZL.Shape {
         effectCfg.rippleScale = this._converage / this._size;
         effectCfg.brushType = this._options['rippleEffect']["brushType"];
         effectCfg.period = this._options['rippleEffect']["period"] * 1000;
-        effectCfg.color = "green";
+        effectCfg.color = "lime";
 
         this.off('mouseover').off('mouseout').off('emphasis').off('normal');
 
@@ -147,13 +148,17 @@ class Sector extends ZL.Shape {
         };
 
         for (var i = 0; i < EFFECT_RIPPLE_NUMBER; i++) {
-            var ripplePath = ZL.createBasicShape("circle", [0, 0, 2], effectCfg.color);
+            var ripplePath = ZL.createShape("circle", {cx: 0, cy: 0, r: 2});
+            ripplePath.setColor(effectCfg.color)
             ripplePath.attr({
                 style: {
                     strokeNoScale: true,
                     stroke: effectCfg.brushType === 'stroke' ? effectCfg.color : null,
-                    fill: effectCfg.brushType === 'fill' ? effectCfg.color : null
+                    fill: effectCfg.brushType === 'fill' ? effectCfg.color : null,
+                    shadowColor: "rgba(30,144,255,0.5)",
+                    shadowBlur : 10
                 },
+                zlevel: 10,
                 z2: 99,
                 silent: true,
                 scale: [0.5, 0.5]
@@ -281,7 +286,7 @@ function loadSectorDataWithConverage() {
             rippleEffect: {
                 period: 4,
                 // Brush type can be fill or stroke
-                brushType: 'fill'
+                brushType: 'stroke'
             }
         }
     };

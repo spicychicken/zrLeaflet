@@ -1,6 +1,6 @@
 import * as turf from "@turf/turf"
 import { Visual } from "./Visual"
-import { ZRUtils } from "../zrender/ZRUtils"
+import { ShapeCreator } from "../shape/ShapeCreator"
 import { GeoJsonParser } from "../geojson/GeoJsonParser"
 
 export class GeoJsonVisual extends Visual {
@@ -44,7 +44,7 @@ export class GeoJsonVisual extends Visual {
     }
 
     _buildObject(type, shape, properties) {
-        var shape = ZRUtils.createBasicShape(type, shape, properties);
+        var shape = ShapeCreator.create(type, shape, properties);
         if (properties.hasOwnProperty("animation")) {
             properties["animation"](shape);
         }
@@ -55,8 +55,7 @@ export class GeoJsonVisual extends Visual {
         points.forEach(p => {
             const pos = subView.latLonToContainerPosition(L.latLng(p[1], p[0]));
             const radius = properties.hasOwnProperty('radius') ? properties['radius'] : 5;
-            // const shape = {cx: pos.x, cy: pos.y, r: radius};
-            const shape = [pos.x, pos.y, radius];
+            const shape = {cx: pos.x, cy: pos.y, r: radius};
             subView.add(this._buildObject('point', shape, properties));
         });
     }
@@ -67,8 +66,7 @@ export class GeoJsonVisual extends Visual {
                 const pos = subView.latLonToContainerPosition(L.latLng(p[1], p[0]));
                 return [pos.x, pos.y]
             })
-            // const shape = {points: linePoints};
-            const shape = linePoints;
+            const shape = {points: linePoints};
             subView.add(this._buildObject('polyline', shape, properties));
         });
     }
@@ -84,8 +82,7 @@ export class GeoJsonVisual extends Visual {
                     });
                 })
 
-                // const shape = {points: polygonPoints};
-                const shape = polygonPoints;
+                const shape = {points: polygonPoints};
                 subView.add(this._buildObject('polygon', shape, properties));
             }
         });
